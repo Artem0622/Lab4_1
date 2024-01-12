@@ -2,89 +2,89 @@
 # -*- coding: utf-8 -*-
 
 class Money:
-    def __init__(self, rubles, kopecks):
-        self.rubles = rubles
-        self.kopecks = kopecks
+    def __init__(self, rubles=0, kopecks=0):
+        self.rubles, self.kopecks = rubles, kopecks
 
     def read(self):
-        try:
-            self.rubles = int(input("Введите количество рублей: "))
-            self.kopecks = int(input("Введите количество копеек: "))
-        except ValueError:
-            print("Некорректный ввод. Введите целое число.")
+        self.rubles, self.kopecks = map(int, input("Введите количество рублей и копеек через пробел: ").split())
 
     def display(self):
-        print(f"{self.rubles} руб. {self.kopecks} коп.")
+        print(f"{self.rubles} руб. {int(self.kopecks):02d} коп.")
 
-    def __add__(self, other):
+    def add(self, other):
+        result = Money()
         total_kopecks = self.rubles * 100 + self.kopecks + other.rubles * 100 + other.kopecks
-        new_rubles = total_kopecks // 100
-        new_kopecks = total_kopecks % 100
-        return Money(new_rubles, new_kopecks)
+        result.rubles, result.kopecks = divmod(total_kopecks, 100)
+        return result
 
-    def __sub__(self, other):
+    def subtract(self, other):
+        result = Money()
         total_kopecks = self.rubles * 100 + self.kopecks - (other.rubles * 100 + other.kopecks)
-        new_rubles = total_kopecks // 100
-        new_kopecks = total_kopecks % 100
-        return Money(new_rubles, new_kopecks)
+        result.rubles, result.kopecks = divmod(total_kopecks, 100)
+        return result
 
-    def __truediv__(self, other):
-        if other == 0:
-            raise ValueError("Деление на ноль недопустимо.")
+    def divide_sum(self, num):
+        result = Money()
         total_kopecks = self.rubles * 100 + self.kopecks
-        result = total_kopecks / other
-        new_rubles = int(result)
-        new_kopecks = round((result - new_rubles) * 100)
-        return Money(new_rubles, new_kopecks)
+        result_kopecks = total_kopecks / num
+        result.rubles, result.kopecks = divmod(int(result_kopecks), 100)
+        return result
 
-    def __mul__(self, other):
+    def divide_by_number(self, num):
+        result = Money()
         total_kopecks = self.rubles * 100 + self.kopecks
-        result = total_kopecks * other
-        new_rubles = int(result // 100)
-        new_kopecks = int(result % 100)
-        return Money(new_rubles, new_kopecks)
+        result_kopecks = total_kopecks / num
+        result.rubles, result.kopecks = divmod(int(result_kopecks), 100)
+        return result
 
-    def __eq__(self, other):
-        return (self.rubles, self.kopecks) == (other.rubles, other.kopecks)
+    def multiply_by_number(self, num):
+        result = Money()
+        total_kopecks = self.rubles * 100 + self.kopecks
+        result_kopecks = total_kopecks * num
+        result.rubles, result.kopecks = divmod(result_kopecks, 100)
+        return result
 
-    def __lt__(self, other):
-        return (self.rubles, self.kopecks) < (other.rubles, other.kopecks)
+    def compare(self, other):
+        return (self.rubles == other.rubles) and (self.kopecks == other.kopecks)
 
-    def __le__(self, other):
-        return (self.rubles, self.kopecks) <= (other.rubles, other.kopecks)
-
-    def __str__(self):
-        return f"{self.rubles} руб. {self.kopecks} коп."
+    def is_less_than(self, other):
+        return (self.rubles * 100 + self.kopecks) < (other.rubles * 100 + other.kopecks)
 
 
 if __name__ == '__main__':
-    money1 = Money(10, 50)
-    money2 = Money(5, 75)
-
-    print("Деньги 1:")
+    money1 = Money()
+    money1.read()
     money1.display()
 
-    print("Деньги 2:")
+    money2 = Money()
+    money2.read()
     money2.display()
 
-    # Примеры операций
-    print("\nОперации:")
-    result = money1 + money2
+    sum_result = money1.add(money2)
     print("Сумма:")
-    result.display()
+    sum_result.display()
 
-    result = money1 - money2
+    diff_result = money1.subtract(money2)
     print("Разность:")
-    result.display()
+    diff_result.display()
 
-    result = money1 / 2.5
+    divide_sum_num = float(input("Введите число для деления суммы: "))
+    div_sum_result = money1.divide_sum(divide_sum_num)
+    print("Деление суммы на число:")
+    div_sum_result.display()
+
+    divide_by_num = float(input("Введите число для деления: "))
+    div_result = money1.divide_by_number(divide_by_num)
     print("Деление на число:")
-    result.display()
+    div_result.display()
 
-    result = money1 * 3
+    multiply_by_num = float(input("Введите число для умножения: "))
+    mul_result = money1.multiply_by_number(multiply_by_num)
     print("Умножение на число:")
-    result.display()
+    mul_result.display()
 
-    print("Сравнение:")
-    print(f"money1 равно money2: {money1 == money2}")
-    print(f"money1 меньше money2: {money1 < money2}")
+    comparison_result = money1.compare(money2)
+    print(f"Сравнение: {comparison_result}")
+
+    comparison_result_lt = money1.is_less_than(money2)
+    print(f"Сравнение меньше: {comparison_result_lt}")

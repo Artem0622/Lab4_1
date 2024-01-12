@@ -4,43 +4,43 @@
 class Pair:
     def __init__(self, first, second):
         if not isinstance(first, int) or not isinstance(second, int):
-            raise ValueError("первый и второй должны быть целыми числами ")
+            raise TypeError("Оба поля (first и second) должны быть целыми числами")
+
         if second == 0:
-            raise ValueError("'Секунда не равна нулю")
+            raise ValueError("Знаменатель (second) не может быть равен нулю")
 
         self.first = first
         self.second = second
 
     def ipart(self):
-        return self.first // self.second
+        """
+        Возвращает целую часть от деления числителя на знаменатель.
+        """
+        if self.second != 0:
+            return self.first // self.second
+        else:
+            raise ValueError("Невозможно вычислить целую часть при нулевом знаменателе")
 
     def display(self):
-        print(f"{self.first}/{self.second}")
+        print(f"({self.first}/{self.second})")
 
     @classmethod
     def read(cls):
-        try:
-            first = int(input("Введите сначало (числитель): "))
-            second = int(input("Введите  (знаменатель):: "))
-            return cls(first, second)
-        except ValueError:
-            print("Ошибка ввода. Пожалуйста введите целочисленное число 'первое' и 'второе'")
-            return None
+        a = int(input("Введите числитель: "))
+        b = int(input("Введите знаменатель: "))
+
+        return cls(a, b)
 
 
-def make_pair():
-    while True:
-        try:
-            pair = Pair.read()
-            if pair is not None:
-                return pair
-        except KeyboardInterrupt:
-            print("Operation aborted by user.")
-            return None
+def make_pair(first, second):
+    try:
+        return Pair(first, second)
+    except (TypeError, ValueError) as e:
+        print(f"Ошибка создания объекта Pair: {e}")
+        exit()
 
 
 if __name__ == "__main__":
-    fraction = make_pair()
-    if fraction:
-        fraction.display()
-        print("Integer part:", fraction.ipart())
+    pair = Pair.read()
+    pair.display()
+    print("Целая часть:", pair.ipart())
